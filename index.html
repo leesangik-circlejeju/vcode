@@ -3,113 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <title>동그라미 교육원</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
+        .topbar {
+            background: #8b7a56;
+            color: #fff;
+            padding: 32px 0 16px 0;
+            text-align: center;
+        }
+        .topbar h1 {
             margin: 0;
-            background: #fafafa;
+            font-size: 2.2em;
+            font-weight: 700;
         }
-        .sidebar {
-            width: 260px;
-            background: #fff;
-            border-right: 1px solid #eee;
-            height: 100vh;
-            position: fixed;
-            padding: 32px 20px 20px 32px;
+        .section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 16px 0 16px;
         }
-        .sidebar h1 {
-            font-size: 1.6em;
+        .intro-video {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+        .intro-video iframe {
+            width: 420px;
+            height: 236px;
+            max-width: 100%;
+            border: none;
+            margin-bottom: 24px;
+        }
+        .intro-text {
+            text-align: center;
+            margin-bottom: 32px;
+            color: #222;
+        }
+        .toc-section {
+            background: #f6f3ec;
+            padding: 32px 0 16px 0;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .toc-section h2 {
+            color: #8b7a56;
+            font-size: 1.5em;
             margin-bottom: 16px;
-            font-weight: bold;
         }
-        .sidebar hr {
-            margin: 16px 0;
-        }
-        .sidebar ul {
+        .toc-section ul {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-        .sidebar > ul > li {
+        .toc-section li {
+            font-size: 1.1em;
             margin: 10px 0;
+        }
+        .programs-section {
+            background: #f6f3ec;
+            padding: 32px 0 32px 0;
+        }
+        .programs-section h2 {
+            color: #8b7a56;
+            font-size: 1.3em;
+            margin-bottom: 24px;
+            margin-left: 16px;
+        }
+        .program-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 32px 40px;
+        }
+        .program-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            width: 340px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 18px 24px 18px;
+        }
+        .program-card img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        .program-card-title {
+            font-weight: 700;
+            color: #8b7a56;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            text-align: left;
+            width: 100%;
+        }
+        .program-card-desc {
             font-size: 1em;
-            color: #222;
+            color: #444;
+            margin-bottom: 16px;
+            text-align: left;
+            width: 100%;
         }
-        .sidebar ul ul {
-            margin-left: 18px;
+        .program-card-btn {
+            background: #8b7a56;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 24px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            width: 100%;
         }
-        .sidebar ul ul ul {
-            margin-left: 36px;
+        .program-card-btn:hover {
+            background: #a08d6a;
         }
-        .sidebar ul ul ul ul {
-            margin-left: 54px;
-        }
-        .sidebar ul li {
-            color: #222;
-        }
-        .sidebar a {
-            color: inherit;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            text-decoration: underline;
-            color: #0078d7;
-        }
-        .content {
-            margin-left: 280px;
-            padding: 40px 32px;
-        }
-        @media (max-width: 700px) {
-            .sidebar { width: 100%; height: auto; position: static; }
-            .content { margin-left: 0; padding: 20px 10px; }
+        @media (max-width: 900px) {
+            .program-cards { flex-direction: column; align-items: center; }
+            .program-card { width: 95%; max-width: 400px; }
         }
     </style>
 </head>
 <body>
-    <nav class="sidebar">
-        <h1>동그라미 교육원</h1>
-        <hr>
+    <div class="topbar">
+        <h1>동그라미 교육원 소개</h1>
+    </div>
+    <div class="section intro-video">
+        <iframe src="https://www.youtube.com/embed/1QwQvQw1QwQ" title="동그라미 교육원 인사말" allowfullscreen></iframe>
+    </div>
+    <div class="section intro-text">
+        <p>동그라미교육원은 최첨단 소프트웨어를 활용한 인지재활 센터로 아이들의 학습능력을 최대로 향상시키는 것을 목표로 합니다.</p>
+        <p>제주지역<br>
+        학습장애(난독,난독증. 난산, 경계선지능아동,문해력개선), 신경발달장애(지적장애, 언어(의사소통)장애, 자폐스펙트럼장애, ADHD, 운동장애) 아동을 위한 전문 연구센터입니다.<br>
+        동그라미 교육원에서는 첨단인지학습을 통해 기존의 전통적 기법에서의 한계를 극복하고 첨단기술을 도입한 언어치료를 통해 보다 과학적으로 학습의 문제를 해결하고 학습능력 향상을 시킬 수 있도록 하겠습니다.</p>
+    </div>
+    <div class="toc-section">
+        <h2>목차</h2>
         <ul>
-            <li><a href="/">HOME</a>
-                <ul>
-                    <li><a href="/nanduk">난독 개선 프로그램</a></li>
-                    <li><a href="/borderline">경계선지능 개선프로그램</a></li>
-                    <li><a href="/adhd-autism">AHHD/자폐/발달장애 프로그램</a></li>
-                    <li><a href="/language">언어능력 향상훈련</a></li>
-                    <li><a href="/cognitive-rehab">첨단인지 재활 프로그램</a></li>
-                    <li><a href="/cognitive-test">첨단인지 재활 검사 프로그램</a></li>
-                    <li>정부 /교육청 지원 바우처
-                        <ul>
-                            <li><a href="/voucher/infant">영유아 발달지원 서비스</a></li>
-                            <li><a href="/voucher/youth">아동청소년 심리지원서비스</a></li>
-                            <li><a href="/voucher/adult">성인재활 심리지원서비스</a></li>
-                            <li><a href="/voucher/development">발달재활서비스</a></li>
-                            <li><a href="/voucher/dyslexia">교육청 난독 난산 서비스</a></li>
-                            <li><a href="/voucher/borderline-support">경계선 지능 치료비 지원</a></li>
-                            <li><a href="/voucher/disabled-child">장애유아 치료카드</a></li>
-                            <li><a href="/voucher/hope-card">교육청 희망 나눔카드</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </li>
+            <li>1. 주요 치료 프로그램</li>
+            <li>2. 첨단인지 재활 치료</li>
+            <li>3. 정부지원 바우처</li>
         </ul>
-    </nav>
-    <div class="content">
-        <h2>동그라미 교육원 소개</h2>
-        <p>
-            동그라미교육원은 최첨단 소프트웨어를 활용한 인지재활 센터로 아이들의 학습능력을 최대로 향상시키는 것을 목표로 합니다.<br>
-            제주지역 학습장애(난독, 난독증, 난산, 경계선지능아동, 문해력개선), 신경발달장애(지적장애, 언어(의사소통)장애, 자폐스펙트럼장애, ADHD, 운동장애) 아동을 위한 전문 연구센터입니다.<br>
-            동그라미 교육원에서는 첨단인지학습을 통해 기존의 전통적 기법에서의 한계를 극복하고 첨단기술을 도입한 언어치료를 통해 보다 과학적으로 학습의 문제를 해결하고 학습능력 향상을 시킬 수 있도록 하겠습니다.
-        </p>
-        <h3>예약 및 상담 문의</h3>
-        <p>
-            제주시 중앙로 541 2층<br>
-            064-712-1480<br>
-            (아라 초등학교 건너편, 롯데리아 옆 건물 2층, 1층 웅진 씽크북, 건물 뒤쪽 지하주차장 및 엘리베이터 이용 가능)
-        </p>
-        <p>
-            이메일: youngjininet@gmail.com
-        </p>
+    </div>
+    <div class="programs-section">
+        <h2>1. 주요 치료 프로그램</h2>
+        <div class="program-cards">
+            <div class="program-card">
+                <img src="images/난독프로그램.jpg" alt="난독 개선 프로그램">
+                <div class="program-card-title">난독 개선 프로그램</div>
+                <div class="program-card-desc">문해력, 경계선지능, 난독으로 세분화하여 대상자의 원인을 분석하여 언어, 인지영역 등의 세부설정을 통한 재활을 진행하는 과정을 설명하였습니다</div>
+                <a href="nanduk.html"><button class="program-card-btn">난독 개선 사이트 이동</button></a>
+            </div>
+            <div class="program-card">
+                <img src="images/경계선지능.jpg" alt="경계선 지능 개선 프로그램">
+                <div class="program-card-title">경계선 지능 개선 프로그램</div>
+                <div class="program-card-desc">경계선 지능아동의 원인이 정서불안, 주의력, 기억력의 인지기능의 결손을 분석하여 치료하는 과정을 설명하였습니다</div>
+                <a href="borderline.html"><button class="program-card-btn">경계선 지능 개선 사이트이동</button></a>
+            </div>
+            <div class="program-card">
+                <img src="images/발달장애.jpg" alt="ADHD/자폐/발달 프로그램">
+                <div class="program-card-title">ADHD/자폐/발달 프로그램</div>
+                <div class="program-card-desc">원인증상을 분석하여, 발달상에 문제를 분석하고 세부적인 발달상의 시점을 분석하여 발달이 이루어 지도록 하는 과정을 설명하였습니다.</div>
+                <a href="adhd-autism.html"><button class="program-card-btn">ADHD/자폐/발달 사이트 이동</button></a>
+            </div>
+            <div class="program-card">
+                <img src="images/언어능력.jpg" alt="언어능력 향상 훈련">
+                <div class="program-card-title">언어능력 향상 훈련</div>
+                <div class="program-card-desc">기존 전통방식의 언어치료에서 음성기기 등 전문 소프트웨어를 활용하여 호흡, 발성, 공명, 조음 등의 원인을 언어심리학적 접근을 통한 치료 방법들을 설명하였습니다.</div>
+                <a href="language.html"><button class="program-card-btn">언어능력 향상 사이트 이동</button></a>
+            </div>
+        </div>
     </div>
 </body>
 </html> 
