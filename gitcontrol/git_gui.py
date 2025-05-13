@@ -3,7 +3,7 @@ import os
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QListWidget, QMessageBox,
-    QFileDialog, QProgressBar, QTreeWidget, QTreeWidgetItem, QComboBox, QMenu
+    QFileDialog, QProgressBar, QTreeWidget, QTreeWidgetItem, QComboBox, QMenu, QInputDialog
 )
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QIcon, QFont
@@ -535,123 +535,54 @@ class GitGUI(QMainWindow):
     def handle_local_action(self):
         self.update_local_terminal_command()
         idx = self.local_action_combo.currentIndex()
-        item = self.file_tree.currentItem()
-        repo_path = self.local_path_input.text()
         if idx < 0:
             QMessageBox.information(self, '알림', '명령어를 선택하세요.')
             return
-        if not item:
-            QMessageBox.warning(self, '경고', '트리에서 이름을 바꿀 파일/폴더를 선택하세요.')
+        cmd = self.local_option_input.text().strip()
+        if not cmd:
             return
-        path = self._get_full_path_from_tree(item, repo_path)
-        if idx == 0:  # 명령어 선택
-            pass
-        elif idx == 1:  # 새 파일 만들기
-            try:
-                with open(path, 'w', encoding='utf-8') as f:
-                    pass
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'파일 생성 실패: {e}')
-        elif idx == 2:  # 새 폴더 만들기
-            try:
-                os.makedirs(path, exist_ok=True)
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'폴더 생성 실패: {e}')
-        elif idx == 3:  # 이름 변경
-            new_name = self.local_option_input.text().strip()
-            try:
-                os.rename(path, os.path.join(os.path.dirname(path), new_name))
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'이름 변경 실패: {e}')
-        elif idx == 4:  # 삭제
-            import shutil
-            try:
-                if os.path.isdir(path):
-                    shutil.rmtree(path)
-                else:
-                    os.remove(path)
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'삭제 실패: {e}')
-        elif idx == 5:  # 탐색기에서 열기
-            import subprocess
-            try:
-                subprocess.Popen(f'explorer /select,"{path}"')
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'탐색기 열기 실패: {e}')
+        try:
+            import os
+            # 현재 작업 디렉토리 저장
+            current_dir = os.getcwd()
+            # 명령어를 실행할 디렉토리로 이동
+            repo_path = self.local_path_input.text()
+            os.chdir(repo_path)
+            # 명령 프롬프트 실행
+            os.system(f'start cmd.exe /k "{cmd}"')
+            # 원래 디렉토리로 복귀
+            os.chdir(current_dir)
+            self.message_label.setText('명령어가 터미널에서 실행됩니다.')
+        except Exception as e:
+            error_msg = f'터미널 실행 실패: {str(e)}'
+            self.message_label.setText(f'<span style="color:red;">{error_msg}</span>')
+            QMessageBox.critical(self, '오류', error_msg)
 
     def handle_git_action(self):
         self.update_git_terminal_command()
         idx = self.git_action_combo.currentIndex()
-        item = self.git_file_tree.currentItem()
-        repo_path = self.local_path_input.text()
         if idx < 0:
             QMessageBox.information(self, '알림', '명령어를 선택하세요.')
             return
-        if not item:
-            QMessageBox.warning(self, '경고', '트리에서 이름을 바꿀 파일/폴더를 선택하세요.')
+        cmd = self.git_option_input.text().strip()
+        if not cmd:
             return
-        path = self._get_full_path_from_tree(item, repo_path, git_tree=True)
-        rel_path = os.path.relpath(path, repo_path)
-        if idx == 0:  # 명령어 선택
-            pass
-        elif idx == 1:  # Git add
-            try:
-                repo = Repo(repo_path)
-                repo.git.add(rel_path)
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'Git add 실패: {e}')
-        elif idx == 2:  # Git untrack
-            try:
-                repo = Repo(repo_path)
-                repo.git.rm('--cached', rel_path)
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'Git untrack 실패: {e}')
-        elif idx == 3:  # Git ignore
-            try:
-                gitignore_path = os.path.join(repo_path, '.gitignore')
-                with open(gitignore_path, 'a', encoding='utf-8') as f:
-                    f.write(rel_path + '\n')
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'Git ignore 추가 실패: {e}')
-        elif idx == 4:  # Git 파일 삭제
-            try:
-                repo = Repo(repo_path)
-                repo.git.rm(rel_path)
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'Git 파일 삭제 실패: {e}')
-        elif idx == 5:  # Git 폴더 삭제
-            try:
-                repo = Repo(repo_path)
-                repo.git.rm('-r', rel_path)
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'Git 폴더 삭제 실패: {e}')
-        elif idx == 6:  # Git 이름 바꾸기
-            new_name = self.git_option_input.text().strip()
-            try:
-                repo = Repo(repo_path)
-                repo.git.mv(rel_path, new_name)
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'Git 이름 바꾸기 실패: {e}')
-        elif idx == 7:  # Git 폴더 생성
-            try:
-                os.makedirs(path, exist_ok=True)
-                with open(os.path.join(path, '.gitkeep'), 'w', encoding='utf-8') as f:
-                    pass
-                repo = Repo(repo_path)
-                repo.git.add(path)
-                self.update_file_list()
-            except Exception as e:
-                QMessageBox.critical(self, '오류', f'Git 폴더 생성 실패: {e}')
+        try:
+            import os
+            # 현재 작업 디렉토리 저장
+            current_dir = os.getcwd()
+            # 명령어를 실행할 디렉토리로 이동
+            repo_path = self.local_path_input.text()
+            os.chdir(repo_path)
+            # 명령 프롬프트 실행
+            os.system(f'start cmd.exe /k "{cmd}"')
+            # 원래 디렉토리로 복귀
+            os.chdir(current_dir)
+            self.message_label.setText('명령어가 터미널에서 실행됩니다.')
+        except Exception as e:
+            error_msg = f'터미널 실행 실패: {str(e)}'
+            self.message_label.setText(f'<span style="color:red;">{error_msg}</span>')
+            QMessageBox.critical(self, '오류', error_msg)
 
     def _get_full_path_from_tree(self, item, root_path, git_tree=False):
         # 트리에서 선택한 아이템의 전체 경로를 반환
@@ -706,6 +637,7 @@ class GitGUI(QMainWindow):
             else:
                 act_download = menu.addAction('파일 다운로드')
         action = menu.exec_(tree_widget.viewport().mapToGlobal(pos))
+
         # 체크된 항목이 있으면, 체크된 것들로 명령어 생성
         targets = checked if checked else [rel_path]
         targets_str = ' '.join(f'"{t}"' for t in targets)
@@ -714,42 +646,68 @@ class GitGUI(QMainWindow):
             # 오른쪽(Git) 트리
             if is_folder:
                 if action == act_new:
-                    self.git_option_input.setText(f'mkdir "{rel_path}/새폴더" && type nul > "{rel_path}/새폴더/.gitkeep" && git add "{rel_path}/새폴더/.gitkeep"')
+                    self.git_option_input.setText(f'cd "{repo_path}" && mkdir "{rel_path}/새폴더" && type nul > "{rel_path}/새폴더/.gitkeep" && git add "{rel_path}/새폴더/.gitkeep"')
                 elif action == act_rename:
-                    self.git_option_input.setText(f'git mv {targets_str} "새이름"')
+                    self.git_option_input.setText(f'cd "{repo_path}" && git mv {targets_str} "새이름"')
                 elif action == act_delete:
-                    self.git_option_input.setText(f'git rm -r {targets_str}')
+                    self.git_option_input.setText(f'cd "{repo_path}" && git rm -r {targets_str}')
                 elif action == act_download:
-                    self.git_option_input.setText(f'git checkout origin/main -- {targets_str}')
+                    self.git_option_input.setText(f'cd "{repo_path}" && git checkout origin/main -- {targets_str}')
             else:
                 if action == act_copy:
-                    self.git_option_input.setText(f'copy {targets_str} "복사본.txt" && git add "복사본.txt"')
+                    self.git_option_input.setText(f'cd "{repo_path}" && copy {targets_str} "복사본.txt" && git add "복사본.txt"')
                 elif action == act_rename:
-                    self.git_option_input.setText(f'git mv {targets_str} "새이름"')
+                    self.git_option_input.setText(f'cd "{repo_path}" && git mv {targets_str} "새이름"')
                 elif action == act_delete:
-                    self.git_option_input.setText(f'git rm {targets_str}')
+                    self.git_option_input.setText(f'cd "{repo_path}" && git rm {targets_str}')
                 elif action == act_download:
-                    self.git_option_input.setText(f'git checkout origin/main -- {targets_str}')
+                    self.git_option_input.setText(f'cd "{repo_path}" && git checkout origin/main -- {targets_str}')
         else:
             # 왼쪽(로컬) 트리
             if is_folder:
                 if action == act_new:
-                    self.local_option_input.setText(f'mkdir "{rel_path}/새폴더"')
+                    self.local_option_input.setText(f'cd "{repo_path}" && mkdir "{rel_path}/새폴더"')
                 elif action == act_rename:
-                    self.local_option_input.setText(f'rename {targets_str} "새이름"')
+                    self.local_option_input.setText(f'cd "{repo_path}" && rename {targets_str} "새이름"')
                 elif action == act_delete:
-                    self.local_option_input.setText(f'rmdir /s /q {targets_str}')
+                    self.local_option_input.setText(f'cd "{repo_path}" && rmdir /s /q {targets_str}')
                 elif action == act_upload:
-                    self.local_option_input.setText(f'git add {targets_str} && git commit -m "폴더 업로드" && git push')
+                    self.local_option_input.setText(f'cd "{repo_path}" && git add {targets_str} && git commit -m "폴더 업로드" && git push')
             else:
                 if action == act_copy:
-                    self.local_option_input.setText(f'copy {targets_str} "복사본.txt"')
+                    self.local_option_input.setText(f'cd "{repo_path}" && copy {targets_str} "복사본.txt"')
                 elif action == act_rename:
-                    self.local_option_input.setText(f'rename {targets_str} "새이름"')
+                    self.local_option_input.setText(f'cd "{repo_path}" && rename {targets_str} "새이름"')
                 elif action == act_delete:
-                    self.local_option_input.setText(f'del {targets_str}')
+                    self.local_option_input.setText(f'cd "{repo_path}" && del {targets_str}')
                 elif action == act_upload:
-                    self.local_option_input.setText(f'git add {targets_str} && git commit -m "파일 업로드" && git push')
+                    self.local_option_input.setText(f'cd "{repo_path}" && git add {targets_str} && git commit -m "파일 업로드" && git push')
+
+    def update_file_list(self):
+        self.file_tree.clear()
+        self.git_file_tree.clear()
+        repo_path = self.local_path_input.text()
+        # 저장소 파일 목록 (실제 폴더 내 모든 파일, 폴더 구조)
+        if os.path.isdir(repo_path):
+            for root, dirs, files in os.walk(repo_path):
+                if '.git' in dirs:
+                    dirs.remove('.git')
+                rel_root = os.path.relpath(root, repo_path)
+                parent = self.file_tree
+                if rel_root != '.':
+                    parent = self._get_or_create_tree_node(self.file_tree, rel_root)
+                for file in files:
+                    item = QTreeWidgetItem(parent, [file])
+                    # 체크박스 추가
+                    item.setCheckState(0, Qt.Unchecked)
+        # Git 파일 목록 (tracked 파일, 폴더 구조)
+        try:
+            repo = Repo(repo_path)
+            tracked_files = list(repo.git.ls_files().splitlines())
+            for f in tracked_files:
+                self._add_tree_path_with_checkbox(self.git_file_tree, f)
+        except Exception:
+            pass
 
 def main():
     app = QApplication(sys.argv)
